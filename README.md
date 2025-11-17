@@ -1,21 +1,20 @@
 # clustering.github.io
-🧠 Análisis de Estado Mental con Clustering 
+🧠 Análisis de Estado Mental con Clustering
 
-Este proyecto implementa un modelo de clustering aplicado al análisis de salud mental, con el propósito de segmentar a los pacientes según su nivel de riesgo psicológico, comportamiento emocional y hábitos de vida.
+Este proyecto implementa un modelo de clustering aplicado al análisis de salud mental, con el propósito de segmentar pacientes según su nivel de riesgo psicológico y hábitos de vida.
 
 El laboratorio integra:
 
-✔ Preprocesamiento completo del dataset
+✔ Preprocesamiento completo
 ✔ Entrenamiento de K-Means
-✔ Evaluación con inercia y coeficiente de silueta
-✔ Interpretación clínica de cada grupo
-✔ Despliegue del modelo usando FastAPI
-✔ API funcional publicada en Render
-✔ Conexión con una interfaz web
+✔ Evaluación con inercia y silueta
+✔ Interpretación clínica
+✔ API funcional desplegada
+✔ Integración web
 
 📊 1. Preparación del Conjunto de Datos
 
-El dataset utilizado es sintético, diseñado para representar pacientes con distintos perfiles psicológicos y conductuales. Incluye 11 variables:
+El dataset sintético diseñado para este laboratorio incluye 11 variables relacionadas con salud mental y estilo de vida:
 
 Ansiedad (0–10)
 
@@ -23,15 +22,15 @@ Depresión (0–10)
 
 Estrés (0–10)
 
-Horas de sueño por noche
+Horas de sueño
 
-Minutos de actividad física por semana
+Actividad física semanal
 
 Autoestima (0–10)
 
 Soporte social (0–10)
 
-Consumo de alcohol (0–7 días/semana)
+Consumo de alcohol (0–7)
 
 Ideación suicida (0–10)
 
@@ -39,107 +38,97 @@ Rendimiento académico (0–100)
 
 Edad
 
-Antes del modelado, se aplicó StandardScaler para estandarizar las variables y facilitar el aprendizaje basado en distancias.
+Las variables fueron estandarizadas mediante StandardScaler para mejorar el desempeño del modelo basado en distancias.
 
-📈 2. Selección del Número Óptimo de Clusters
+📈 2. Selección del Número de Clusters (k)
 
-Se evaluaron modelos K-Means para valores de 
+Se entrenaron modelos K-Means para valores de 
 𝑘
-k entre 2 y 10. Para cada uno se calcularon:
+k entre 2 y 10.
+Para cada uno se calculó:
 
 Inercia (SSE)
 
 Coeficiente de Silueta
 
-Con estos datos se generaron dos gráficas:
+Se generaron dos gráficas:
 
-Método del codo (Inercia vs k)
+Gráfica del Codo (Inercia vs k)
 
-Curva de Silueta (Silhouette vs k)
+Silhouette Score (Silueta vs k)
 
-El número óptimo de clusters se seleccionó con base en:
-
-📌 Buen equilibrio entre baja inercia y alta cohesión/separación.
+El número óptimo de clusters se seleccionó en base al mejor compromiso entre variación explicada y cohesión/separación.
 
 🧬 3. Entrenamiento del Modelo Final
 
-Ya con el valor óptimo de 
+Con el valor óptimo de 
 𝑘
-k, se entrenó el modelo definitivo kmeans_final.
-Cada paciente fue clasificado y se generaron estadísticas clave:
+k, se entrenó el modelo final kmeans_final, asignando un cluster a cada registro.
+Se generaron estadísticas descriptivas:
 
-Media por variable
+Media
 
 Desviación estándar
 
-Valores extremos
+Valores máximos y mínimos
 
-Cantidad de pacientes por cluster
+Tamaño de cada cluster
 
-Este análisis permitió interpretar el significado clínico de cada grupo.
+Estas estadísticas permitieron analizar adecuadamente cada grupo.
 
 🧾 4. Interpretación Clínica de los Clusters
+🟢 Cluster 0 – Bajo Riesgo
 
-Los clusters obtenidos muestran una separación clara entre perfiles de riesgo bajo, moderado y alto.
+Baja ansiedad, depresión y estrés
 
-🟢 Cluster 0 – Bajo riesgo / Perfil compensado
+Buen sueño y actividad física
 
-Estrés, ansiedad y depresión bajos
-
-Buenos hábitos de sueño y actividad física
-
-Alta autoestima y soporte social
+Autoestima y soporte social altos
 
 Ideación suicida mínima
 
-Rendimiento académico alto
+➡ Perfil emocionalmente estable.
 
-➡ Representa pacientes bien regulados emocionalmente.
+🟡 Cluster 1 – Estrés Académico / Riesgo Moderado
 
-🟡 Cluster 1 – Estrés académico / Riesgo moderado
-
-Ansiedad y estrés elevados
+Estrés y ansiedad elevados
 
 Sueño reducido
 
-Autoestima y soporte medio
+Autoestima media
 
 Ideación suicida leve
 
-Rendimiento académico variable
+➡ Perfil asociado a sobrecarga académica o personal.
 
-➡ Grupo en riesgo medio, caracterizado por sobrecarga académica.
+🔴 Cluster 2 – Alto Riesgo Psicológico
 
-🔴 Cluster 2 – Alto riesgo psicológico
+Alta ansiedad, depresión y estrés
 
-Altos niveles de ansiedad, depresión y estrés
+Bajo soporte social
 
-Autoestima baja
+Autoestima reducida
 
-Poca actividad física
+Ideación suicida elevada
 
-Soporte social limitado
+Rendimiento afectado
 
-Ideación suicida alta
+➡ Necesita atención psicológica prioritaria.
 
-Bajo rendimiento académico
+🚀 5. API del Modelo (FastAPI + Render)
 
-➡ Representa pacientes con clara necesidad de intervención prioritaria.
-
-🚀 5. API del Modelo – FastAPI + Render
-
-El modelo y el escalador fueron serializados como:
+El modelo fue serializado como:
 
 modelo_clustering.pkl
 
 scaler.pkl
 
-Y se implementó una API con FastAPI, desplegada en Render:
+Y desplegado mediante FastAPI en Render:
 
-📡 Endpoint principal
+📡 Endpoint
 POST https://api-clustering.onrender.com/predecir
 
-🔌 Ejemplo de petición
+🔌 Ejemplo de solicitud
 {
   "valores": [5, 6, 7, 6, 100, 4, 5, 2, 3, 70, 22]
 }
@@ -151,57 +140,52 @@ POST https://api-clustering.onrender.com/predecir
   "valores": [...]
 }
 
+🌐 6. Integración Web
 
-La API se integra exitosamente con una interfaz web funcional.
-
-🌐 6. Integración con Interfaz Web
-
-La página web del proyecto incluye una sección donde el usuario ingresa las 11 variables y el sistema envía la petición a la API.
-El resultado muestra el cluster asignado, permitiendo una consulta simple, rápida y visual.
+La API se conecta con una interfaz web que permite ingresar valores manualmente.
+El sistema devuelve el cluster asignado en tiempo real, convirtiéndolo en una herramienta interactiva útil para análisis académico y demostración.
 
 📁 7. Estructura del Repositorio
 clustering.github.io/
 │
 ├── modelo/
-│    ├── modelo_clustering.pkl
-│    └── scaler.pkl
+│   ├── modelo_clustering.pkl
+│   └── scaler.pkl
 │
 ├── main.py
 ├── requirements.txt
 ├── Analisisdeestadomental.ipynb
 └── README.md
 
-🧩 8. Limitaciones del Modelo
+🧩 8. Limitaciones
 
-Aunque funcional y útil como ejercicio académico, el sistema presenta algunas limitaciones:
+Dataset sintético (no datos reales)
 
-El dataset es sintético, no clínico real.
+K-Means no captura estructuras complejas
 
-No se incorpora información cualitativa o historial previo.
+No se incluye información cualitativa
 
-El modelo no reemplaza evaluación profesional.
-
-K-Means supone clusters esféricos y puede fallar si los datos reales no cumplen esa forma.
+No sustituye evaluación clínica profesional
 
 🧠 9. Conclusiones
 
-El proyecto permitió aplicar de manera práctica técnicas de clustering para segmentar pacientes según indicadores psicológicos.
-La metodología implementada demostró:
+Este laboratorio permitió aplicar técnicas de clustering para la segmentación de pacientes según sus indicadores de salud mental.
 
-El valor del preprocesamiento (escalado, normalización)
+El proceso evidenció:
 
-La importancia de seleccionar correctamente el número de clusters
+La importancia del preprocesamiento
 
-La capacidad del clustering para revelar patrones de riesgo
+La utilidad del clustering para identificar perfiles psicológicos
 
-Que la integración con APIs puede convertir modelos analíticos en herramientas interactivas
+La viabilidad de integrar modelos con APIs
 
-El potencial del análisis automatizado como apoyo en la toma de decisiones clínicas
+Cómo una solución completa puede abarcar:
+modelo → servidor → interfaz web
 
-El despliegue web y la API completan la solución, permitiendo un flujo completo: modelo → servidor → interfaz web.
+El resultado es un sistema funcional, interactivo y útil como demostración académica.
 
 👤 Autor
 
 Bryan Chirú V
 Ingeniería Biomédica – ULAT
-Inteligencia Artificial, 2025
+Inteligencia Artificial – 2025
