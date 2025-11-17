@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 import numpy as np
+from fastapi.middleware.cors import CORSMiddleware  # ⬅ NUEVO
 
-# Variables en el mismo orden del modelo
 FEATURES = [
     "ansiedad",
     "depresion",
@@ -20,12 +20,20 @@ FEATURES = [
 
 app = FastAPI()
 
-# Cargar modelo y scaler
+# 🔓 CORS para permitir llamadas desde tu página
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # si quieres, luego lo cambiamos a tu URL específica
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 modelo = joblib.load("modelo/modelo_clustering.pkl")
 scaler = joblib.load("modelo/scaler.pkl")
 
 class DatosPaciente(BaseModel):
-    valores: list  # valores en el orden de FEATURES
+    valores: list  # lista de 11 valores en el orden de FEATURES
 
 @app.get("/")
 def root():
